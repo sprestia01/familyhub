@@ -32,10 +32,10 @@
   }
 
   body {
-    padding: 28px 36px;
+    padding: 20px 26px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
   }
 
   /* ---------- Header ---------- */
@@ -46,7 +46,7 @@
   }
 
   .header-title {
-    font-size: 30px;
+    font-size: 22px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
@@ -54,17 +54,17 @@
   .header-time {
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    gap: 12px;
   }
 
   .header-time .clock {
-    font-size: 30px;
+    font-size: 22px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
   .header-time .date {
-    font-size: 17px;
+    font-size: 13px;
     color: var(--text-secondary);
   }
 
@@ -72,35 +72,42 @@
   .panel {
     background: var(--panel);
     border: 1px solid var(--panel-line);
-    border-radius: 14px;
-    padding: 18px 22px;
+    border-radius: 12px;
+    padding: 14px 16px;
   }
 
   .panel-label {
-    font-size: 14px;
+    font-size: 11px;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 600;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  /* ---------- Top row: week view + schedule view, side by side ---------- */
-  .top-row {
+  /* ---------- Main layout: calendar on the left, lists stacked on the right ---------- */
+  .main-layout {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 20px;
-    flex: 0 0 auto;
-    height: 58vh;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 14px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .calendar-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 
   .calendar-panel {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    flex: 1 1 auto;
   }
 
   .calendar-panel iframe {
@@ -111,42 +118,46 @@
     background: #fff;
   }
 
-  /* ---------- Bottom row: lists, compact ---------- */
-  .bottom-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1.2fr;
-    gap: 16px;
-    flex: 1 1 auto;
+  .lists-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     min-height: 0;
+    overflow: hidden;
   }
 
-  .bottom-row .panel {
-    padding: 14px 18px;
+  .lists-column .panel {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
-  .bottom-row .panel-label {
-    font-size: 13px;
-    margin-bottom: 10px;
+  .lists-column .check-list,
+  .lists-column .meal-list,
+  .lists-column .weather-list {
+    overflow-y: auto;
   }
 
   .check-list {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 5px;
     overflow: hidden;
   }
 
   .check-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 15px;
+    gap: 8px;
+    font-size: 12.5px;
   }
 
   .check-box {
-    width: 18px;
-    height: 18px;
-    border-radius: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
     border: 1.5px solid var(--text-tertiary);
     flex-shrink: 0;
     display: flex;
@@ -161,10 +172,10 @@
 
   .check-row.done .check-box::after {
     content: "";
-    width: 7px;
-    height: 4px;
-    border-left: 2px solid #0e1a13;
-    border-bottom: 2px solid #0e1a13;
+    width: 6px;
+    height: 3px;
+    border-left: 1.5px solid #0e1a13;
+    border-bottom: 1.5px solid #0e1a13;
     transform: rotate(-45deg) translate(0, -1px);
   }
 
@@ -176,14 +187,14 @@
   .meal-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     overflow: hidden;
   }
 
   .meal-row {
     display: flex;
     align-items: baseline;
-    gap: 12px;
+    gap: 10px;
   }
 
   .meal-row.today .meal-day,
@@ -192,34 +203,70 @@
   }
 
   .meal-day {
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-secondary);
-    width: 38px;
+    width: 32px;
     flex-shrink: 0;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
   .meal-name {
-    font-size: 16px;
+    font-size: 12.5px;
     color: var(--text-primary);
   }
 
-  /* ---------- Calendar embed panel ---------- */
-  .calendar-embed-panel {
-    flex: 1 1 auto;
+  /* ---------- Weather panel ---------- */
+  .weather-list {
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    gap: 6px;
+    overflow: hidden;
   }
 
-  .calendar-embed-panel iframe {
-    flex: 1 1 auto;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    min-height: 0;
+  .weather-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .weather-day {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 32px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .weather-icon {
+    font-size: 16px;
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .weather-desc {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .weather-temps {
+    font-size: 12.5px;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .weather-temps .high {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .weather-temps .low {
+    color: var(--text-tertiary);
   }
 </style>
 </head>
@@ -233,53 +280,47 @@
     </div>
   </div>
 
-  <div class="top-row">
+  <div class="main-layout">
 
-    <div class="panel calendar-panel">
-      <div class="panel-label">This week</div>
-      <!--
-        Connected to sprestia01@gmail.com, week view.
-        To swap calendars or change view: edit the src= URL below.
-      -->
-      <iframe
-        id="calendar-frame-week"
-        src="https://calendar.google.com/calendar/embed?src=sprestia01%40gmail.com&ctz=America%2FNew_York&mode=WEEK"
-        frameborder="0"
-        scrolling="no">
-      </iframe>
+    <div class="calendar-column">
+      <div class="panel calendar-panel">
+        <div class="panel-label">Calendar</div>
+        <!--
+          Connected to sprestia01@gmail.com, month view.
+          To swap calendars or change view: edit the src= URL below.
+          (mode=MONTH, mode=WEEK, mode=AGENDA, mode=DAY are the options.)
+        -->
+        <iframe
+          id="calendar-frame"
+          src="https://calendar.google.com/calendar/embed?src=sprestia01%40gmail.com&ctz=America%2FNew_York&mode=AGENDA"
+          frameborder="0"
+          scrolling="no">
+        </iframe>
+      </div>
     </div>
 
-    <div class="panel calendar-panel">
-      <div class="panel-label">Schedule</div>
-      <!--
-        Connected to sprestia01@gmail.com, agenda/schedule view.
-        To swap calendars or change view: edit the src= URL below.
-      -->
-      <iframe
-        id="calendar-frame-agenda"
-        src="https://calendar.google.com/calendar/embed?src=sprestia01%40gmail.com&ctz=America%2FNew_York&mode=AGENDA"
-        frameborder="0"
-        scrolling="no">
-      </iframe>
-    </div>
+    <div class="lists-column">
 
-  </div>
+      <div class="panel">
+        <div class="panel-label">To-do</div>
+        <div class="check-list" id="todo-list"></div>
+      </div>
 
-  <div class="bottom-row">
+      <div class="panel">
+        <div class="panel-label">Grocery list</div>
+        <div class="check-list" id="grocery-list"></div>
+      </div>
 
-    <div class="panel">
-      <div class="panel-label">To-do</div>
-      <div class="check-list" id="todo-list"></div>
-    </div>
+      <div class="panel">
+        <div class="panel-label">Meal plan</div>
+        <div class="meal-list" id="meal-list"></div>
+      </div>
 
-    <div class="panel">
-      <div class="panel-label">Grocery list</div>
-      <div class="check-list" id="grocery-list"></div>
-    </div>
+      <div class="panel">
+        <div class="panel-label">Weather</div>
+        <div class="weather-list" id="weather-list"></div>
+      </div>
 
-    <div class="panel">
-      <div class="panel-label">Meal plan</div>
-      <div class="meal-list" id="meal-list"></div>
     </div>
 
   </div>
@@ -318,6 +359,17 @@ const SHEET_CSV_URLS = {
   todo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=0&single=true&output=csv",
   groceries: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=985037357&single=true&output=csv",
   meals: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=293496617&single=true&output=csv"
+};
+
+/* =========================================================================
+   Weather: 3-day forecast via Open-Meteo (free, no API key required).
+   Set your location's latitude/longitude below — defaults to Baltimore, MD.
+   Find coordinates for any city by searching "[city name] latitude longitude".
+   ========================================================================= */
+const WEATHER_LOCATION = {
+  latitude: 39.3637,
+  longitude: -77.5499,
+  label: "21755 (Jefferson, MD)"
 };
 
 /* =========================================================================
@@ -484,11 +536,65 @@ async function loadAndRenderMealPlan() {
   });
 }
 
+// Maps Open-Meteo's numeric weather codes to a simple icon + label.
+// Reference: https://open-meteo.com/en/docs (WMO weather codes)
+function describeWeatherCode(code) {
+  if (code === 0) return { icon: "☀", label: "Clear" };
+  if (code <= 2) return { icon: "🌤", label: "Mostly clear" };
+  if (code === 3) return { icon: "☁", label: "Cloudy" };
+  if (code === 45 || code === 48) return { icon: "🌫", label: "Foggy" };
+  if (code >= 51 && code <= 57) return { icon: "🌦", label: "Drizzle" };
+  if (code >= 61 && code <= 67) return { icon: "🌧", label: "Rain" };
+  if (code >= 71 && code <= 77) return { icon: "❄", label: "Snow" };
+  if (code >= 80 && code <= 82) return { icon: "🌧", label: "Showers" };
+  if (code >= 85 && code <= 86) return { icon: "🌨", label: "Snow showers" };
+  if (code >= 95) return { icon: "⛈", label: "Thunderstorms" };
+  return { icon: "•", label: "—" };
+}
+
+async function loadAndRenderWeather() {
+  const list = document.getElementById("weather-list");
+  const { latitude, longitude } = WEATHER_LOCATION;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto&forecast_days=3`;
+
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error("Weather fetch failed: " + response.status);
+    const data = await response.json();
+
+    const days = data.daily.time;
+    const codes = data.daily.weather_code;
+    const highs = data.daily.temperature_2m_max;
+    const lows = data.daily.temperature_2m_min;
+
+    list.innerHTML = "";
+    days.forEach((dateStr, i) => {
+      const date = new Date(dateStr + "T00:00:00");
+      const dayLabel = i === 0 ? "Today" : date.toLocaleDateString([], { weekday: "short" });
+      const { icon, label } = describeWeatherCode(codes[i]);
+
+      const row = document.createElement("div");
+      row.className = "weather-row";
+      row.innerHTML = `
+        <div class="weather-day">${escapeHtml(dayLabel)}</div>
+        <div class="weather-icon">${icon}</div>
+        <div class="weather-desc">${escapeHtml(label)}</div>
+        <div class="weather-temps"><span class="high">${Math.round(highs[i])}°</span> <span class="low">${Math.round(lows[i])}°</span></div>
+      `;
+      list.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Failed to load weather:", err);
+    list.innerHTML = `<div class="weather-row"><div class="weather-desc" style="color:var(--text-tertiary);">Weather unavailable</div></div>`;
+  }
+}
+
 async function loadAllListData() {
   await Promise.all([
     loadAndRenderTodos(),
     loadAndRenderGroceries(),
-    loadAndRenderMealPlan()
+    loadAndRenderMealPlan(),
+    loadAndRenderWeather()
   ]);
 }
 
