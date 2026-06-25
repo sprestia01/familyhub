@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Hub</title>
+<style>
+  :root {
+    --bg: #15171c;
+    --panel: #1d2027;
+    --panel-line: #2b2f38;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9499a6;
+    --text-tertiary: #5d6270;
+    --accent: #5b8def;
+    --accent-dim: #233756;
+    --accent-text: #9cc0ff;
+    --done: #5fa777;
+    --warn: #d9a25b;
+    --font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font);
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    padding: 28px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .header-title {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .header-time {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .header-time .clock {
+    font-size: 30px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .header-time .date {
+    font-size: 17px;
+    color: var(--text-secondary);
+  }
+
+  /* ---------- Panels ---------- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 14px;
+    padding: 18px 22px;
+  }
+
+  .panel-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ---------- Top row: week view + schedule view, side by side ---------- */
+  .top-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    flex: 0 0 auto;
+    height: 58vh;
+  }
+
+  .calendar-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .calendar-panel iframe {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  /* ---------- Bottom row: lists, compact ---------- */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 16px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .bottom-row .panel {
+    padding: 14px 18px;
+  }
+
+  .bottom-row .panel-label {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    overflow: hidden;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--text-tertiary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-row.done .check-box {
+    background: var(--done);
+    border-color: var(--done);
+  }
+
+  .check-row.done .check-box::after {
+    content: "";
+    width: 7px;
+    height: 4px;
+    border-left: 2px solid #0e1a13;
+    border-bottom: 2px solid #0e1a13;
+    transform: rotate(-45deg) translate(0, -1px);
+  }
+
+  .check-row.done .check-label {
+    color: var(--text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .meal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+  }
+
+  .meal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .meal-row.today .meal-day,
+  .meal-row.today .meal-name {
+    color: var(--accent-text);
+  }
+
+  .meal-day {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 38px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .meal-name {
+    font-size: 16px;
+    color: var(--text-primary);
+  }
+
+  /* ---------- Calendar embed panel ---------- */
+  .calendar-embed-panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .calendar-embed-panel iframe {
+    flex: 1 1 auto;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    min-height: 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title">The family hub</div>
+    <div class="header-time">
+      <span class="clock" id="clock-time">--:--</span>
+      <span class="date" id="clock-date">Loading date</span>
+    </div>
+  </div>
+
+  <div class="top-row">
+
+    <div class="panel calendar-panel">
+      <div class="panel-label">This week</div>
+      <!--
+        Connected to sprestia01@gmail.com, week view.
+        To swap calendars or change view: edit the src= URL below.
+      -->
+      <iframe
+        id="calendar-frame-week"
+        src="https://calendar.google.com/calendar/embed?src=sprestia01%40gmail.com&ctz=America%2FNew_York&mode=WEEK"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+    </div>
+
+    <div class="panel calendar-panel">
+      <div class="panel-label">Schedule</div>
+      <!--
+        Connected to sprestia01@gmail.com, agenda/schedule view.
+        To swap calendars or change view: edit the src= URL below.
+      -->
+      <iframe
+        id="calendar-frame-agenda"
+        src="https://calendar.google.com/calendar/embed?src=sprestia01%40gmail.com&ctz=America%2FNew_York&mode=AGENDA"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+    </div>
+
+  </div>
+
+  <div class="bottom-row">
+
+    <div class="panel">
+      <div class="panel-label">To-do</div>
+      <div class="check-list" id="todo-list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Grocery list</div>
+      <div class="check-list" id="grocery-list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Meal plan</div>
+      <div class="meal-list" id="meal-list"></div>
+    </div>
+
+  </div>
+
+<script>
+/* =========================================================================
+   EDIT THIS SECTION to personalize the dashboard.
+   No coding knowledge needed beyond editing the lists below.
+   ========================================================================= */
+
+/* =========================================================================
+   Data now lives in a shared Google Sheet, not in this file.
+   Edit the lists from your phone using the Google Sheets app — changes
+   show up here automatically on the next refresh (no file editing needed).
+
+   ONE-TIME SETUP:
+   1. Create a Google Sheet with three tabs named exactly: todo, groceries, meals
+      - "todo" tab columns:      A = text          B = done (TRUE or FALSE)
+      - "groceries" tab columns: A = text
+      - "meals" tab columns:     A = day (Mon/Tue/Wed/Thu/Fri/Sat/Sun)  B = meal
+   2. File > Share > Publish to web > select "Entire document" >
+      publish as "Comma-separated values (.csv)"
+        (Publishing to web is what makes the CSV link work without login.
+         This makes the sheet's contents viewable by anyone with the exact
+         link below — fine for grocery/to-do lists, just don't put anything
+         sensitive in this sheet.)
+   3. For EACH tab, get its own CSV link:
+      File > Share > Publish to web > in the dropdown choose the specific
+      sheet tab (not "Entire document") > "Comma-separated values (.csv)" >
+      copy that link > paste below, replacing the matching placeholder.
+   4. Each tab's CSV link differs only in its "gid=" number at the end —
+      that identifies which tab it points to.
+   ========================================================================= */
+
+const SHEET_CSV_URLS = {
+  todo: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=0&single=true&output=csv",
+  groceries: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=985037357&single=true&output=csv",
+  meals: "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7Pzpji3nmqgm23KgrUVXwzpKA15zFV4sJN3aFgQVTmJhxBaKjOqej32vgDAn2jQDU3xcIWCfiOo-V/pub?gid=293496617&single=true&output=csv"
+};
+
+/* =========================================================================
+   Today's agenda panel (above, in the HTML) is a live Google Calendar embed
+   connected to sprestia01@gmail.com — not driven by data in this script.
+   To change calendars or view mode, edit the iframe's src= URL directly.
+   The week strip and meal plan below are still manual/edit-in-place.
+   ========================================================================= */
+
+/* =========================================================================
+   Below this line: rendering logic. No need to edit unless you want to
+   change how things are laid out.
+   ========================================================================= */
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock-time").textContent =
+    now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  document.getElementById("clock-date").textContent =
+    now.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+function renderCheckList(containerId, items, getText, getDone) {
+  const list = document.getElementById(containerId);
+  list.innerHTML = "";
+
+  items.forEach(item => {
+    const text = getText(item);
+    const done = getDone ? getDone(item) : false;
+
+    const row = document.createElement("div");
+    row.className = "check-row" + (done ? " done" : "");
+    row.innerHTML = `
+      <div class="check-box"></div>
+      <div class="check-label">${escapeHtml(text)}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Parses one line of CSV into an array of fields, handling quoted fields
+// that may contain commas (Google Sheets quotes any field with a comma in it).
+function parseCsvLine(line) {
+  const fields = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (inQuotes) {
+      if (char === '"' && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        current += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ",") {
+        fields.push(current);
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+  }
+  fields.push(current);
+  return fields;
+}
+
+function parseCsv(text) {
+  return text
+    .split(/\r?\n/)
+    .filter(line => line.trim().length > 0)
+    .map(parseCsvLine);
+}
+
+async function fetchCsv(url) {
+  if (!url || url.startsWith("PASTE_")) {
+    return null;
+  }
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error("Fetch failed: " + response.status);
+    const text = await response.text();
+    return parseCsv(text);
+  } catch (err) {
+    console.error("Failed to load sheet data:", url, err);
+    return null;
+  }
+}
+
+async function loadAndRenderTodos() {
+  const rows = await fetchCsv(SHEET_CSV_URLS.todo);
+  const list = document.getElementById("todo-list");
+
+  if (!rows) {
+    list.innerHTML = `<div class="check-row"><div class="check-label" style="color:var(--text-tertiary);">Connect a Google Sheet to see your to-dos here</div></div>`;
+    return;
+  }
+
+  const dataRows = rows[0] && rows[0][0] && rows[0][0].toLowerCase() === "text" ? rows.slice(1) : rows;
+  const items = dataRows
+    .filter(r => r[0] && r[0].trim().length > 0)
+    .map(r => ({ text: r[0], done: (r[1] || "").trim().toUpperCase() === "TRUE" }));
+
+  renderCheckList("todo-list", items, t => t.text, t => t.done);
+}
+
+async function loadAndRenderGroceries() {
+  const rows = await fetchCsv(SHEET_CSV_URLS.groceries);
+  const list = document.getElementById("grocery-list");
+
+  if (!rows) {
+    list.innerHTML = `<div class="check-row"><div class="check-label" style="color:var(--text-tertiary);">Connect a Google Sheet to see your grocery list here</div></div>`;
+    return;
+  }
+
+  const dataRows = rows[0] && rows[0][0] && rows[0][0].toLowerCase() === "text" ? rows.slice(1) : rows;
+  const items = dataRows.map(r => r[0]).filter(t => t && t.trim().length > 0);
+
+  renderCheckList("grocery-list", items, g => g, () => false);
+}
+
+async function loadAndRenderMealPlan() {
+  const rows = await fetchCsv(SHEET_CSV_URLS.meals);
+  const dayOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const jsDay = new Date().getDay();
+  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+  const list = document.getElementById("meal-list");
+
+  if (!rows) {
+    list.innerHTML = `<div class="meal-row"><div class="meal-name" style="color:var(--text-tertiary);">Connect a Google Sheet to see your meal plan here</div></div>`;
+    return;
+  }
+
+  const dataRows = rows[0] && rows[0][0] && rows[0][0].toLowerCase() === "day" ? rows.slice(1) : rows;
+  const mealsByDay = {};
+  dataRows.forEach(r => {
+    if (r[0]) mealsByDay[r[0].trim()] = r[1] || "";
+  });
+
+  list.innerHTML = "";
+  dayOrder.forEach((day, i) => {
+    const meal = mealsByDay[day] || "—";
+    const row = document.createElement("div");
+    row.className = "meal-row" + (i === todayIndex ? " today" : "");
+    row.innerHTML = `
+      <div class="meal-day">${day}</div>
+      <div class="meal-name">${escapeHtml(meal)}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function loadAllListData() {
+  await Promise.all([
+    loadAndRenderTodos(),
+    loadAndRenderGroceries(),
+    loadAndRenderMealPlan()
+  ]);
+}
+
+loadAllListData();
+
+// Refresh list data from the Sheet every 5 minutes, so edits made on a
+// phone show up here without needing a full page reload.
+setInterval(loadAllListData, 5 * 60 * 1000);
+
+// Full page reload once an hour as a fallback (also keeps calendar
+// iframes fresh, since iframes don't auto-refresh on their own).
+setTimeout(() => location.reload(), 60 * 60 * 1000);
+</script>
+
+</body>
+</html>
